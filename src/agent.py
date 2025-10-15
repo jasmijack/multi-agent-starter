@@ -38,19 +38,32 @@ class Agent:
         self.memory.add({"type": "reply", "agent": self.name, "text": reply})
 
         # optional JSON tool protocol: {"tool":"calculator","args":{"expr":"7*6"}}
-        tool_out = None
-        try:
-            s = reply.strip()
-            if s.startswith("{") and s.endswith("}"):
-                obj = json.loads(s)
-                if "tool" in obj and "args" in obj:
-                    tool_out = self.tool_call(obj["tool"], **obj["args"])
-        except Exception as e:
-            tool_out = f"Tool error: {e}"
+       tool_out = None
+try:
+    s = reply.strip()
+    if s.startswith("{") and s.endswith("}"):
+        obj = json.loads(s)
+        if "tool" in obj and "args" in obj:
+            tool_out = self.tool_call(obj["tool"], **obj["args"])
+except Exception as e:
+    tool_out = f"Tool error: {e}"
 
-        content = reply if tool_out is None else f"{reply}\n\nTool result: {tool_out}"
-        return Message(id=new_id(), sender=self.name, recipient="router",
-                       content=content, metadata={"type": "agent_update"})
+if tool_out is None:
+    content = reply
+else:
+    # Include tool result and, if the model didn't already provide one,
+    # emit a final_answer line so orchestrators/tests can detect completion.
+    content = f"{reply}\n\nTool result: {tool_out}"
+    if "final_answer" not in reply.lower():
+        content += f"\nfinal_answer: {tool_out}"
+
+return Message(
+    id=new_id(),
+    sender=self.name,
+    recipient="router",
+    content=content,
+    metadata={"type": "agent_update"}
+)
 
 def make_researcher(llm: LLMFn) -> Agent:
     prompt = (
