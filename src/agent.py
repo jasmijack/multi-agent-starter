@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import json
 
 from .core import Message, new_id, Tool, Memory
+from tools.calculator import Calculator 
 
 LLMFn = Callable[[List[Dict[str, str]], Dict[str, Any]], str]
 
@@ -58,7 +59,6 @@ def make_researcher(llm: LLMFn) -> Agent:
         '{"tool":"calculator","args":{"expr":"7*6"}} then include the result. '
         "When solved, add the line 'final_answer: <text>'."
     )
-    from .core import Calculator
     return Agent("Researcher", prompt, llm, tools=[Calculator()])
 
 def make_critic(llm: LLMFn) -> Agent:
