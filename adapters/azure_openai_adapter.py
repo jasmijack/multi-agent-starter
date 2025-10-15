@@ -1,27 +1,35 @@
 import os
 from typing import List, Dict, Any
-from azure.ai.openai import OpenAIClient
-from azure.core.credentials import AzureKeyCredential
+from openai import OpenAI
 
 def azure_openai_llm(
-    endpoint: str | None = None,
-    deployment: str | None = None,
+    endpoint: str | None = None,         # e.g. https://myresource.openai.azure.com
     api_key: str | None = None,
-    api_version: str | None = None,
+    deployment: str | None = None,       # your deployed chat model name
+    api_version: str | None = None,      # e.g. 2024-08-01-preview
 ):
     endpoint = endpoint or os.getenv("AZURE_OPENAI_ENDPOINT")
-    deployment = deployment or os.getenv("AZURE_OPENAI_DEPLOYMENT")
     api_key = api_key or os.getenv("AZURE_OPENAI_API_KEY")
+    deployment = deployment or os.getenv("AZURE_OPENAI_DEPLOYMENT")
     api_version = api_version or os.getenv("AZURE_OPENAI_API_VERSION", "2024-08-01-preview")
 
-    client = OpenAIClient(endpoint=endpoint, credential=AzureKeyCredential(api_key), api_version=api_version)
+    if not all([endpoint, api_key, deployment]):
+        raise ValueError("Missing Azure OpenAI config: set AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_KEY, AZURE_OPENAI_DEPLOYMENT")
+
+    # OpenAI Python SDK v2 supports Azure via base_url + default_query
+    client = OpenAI(
+        api_key=api_key,
+        base_url=f"{endpoint}/openai/deployments/{deployment}",
+        default_query={"api-version": api_version},
+    )
 
     def _llm(messages: List[Dict[str, str]], params: Dict[str, Any]) -> str:
         resp = client.chat.completions.create(
-            model=deployment,
+            model=deployment,  # value ignored by Azure when base_url targets a deployment
             messages=messages,
             temperature=params.get("temperature", 0.2),
             max_tokens=params.get("max_tokens", 512),
         )
         return (resp.choices[0].message.content or "").strip()
+
     return _llm
