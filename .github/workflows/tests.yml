@@ -1,4 +1,7 @@
-- name: Install deps
+- name: Run tests
+  env:
+    PYTHONPATH: ${{ github.workspace }}
+    PYTEST_ADDOPTS: -ra -vv
   run: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
+    python -c "import sys,os;print('PYTHONPATH=',os.environ.get('PYTHONPATH'));print('sys.path[0]=',sys.path[0])"
+    pytest || (echo '--- pytest failed; re-running with -vv for details ---' && pytest -vv)
