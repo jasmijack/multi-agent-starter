@@ -1,6 +1,6 @@
 # multi-agent-lab
 
-[![CI](https://img.shields.io/github/actions/workflow/status/your-username/multi-agent-lab/tests.yml?branch=main)](../../actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/jasmijack/multi-agent-starter/tests.yml?branch=main)](../../actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.9+-blue.svg)
 
