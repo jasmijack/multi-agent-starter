@@ -9,7 +9,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     env:
       PYTHONPATH: ${{ github.workspace }}
       PYTEST_ADDOPTS: -ra -vv
@@ -23,7 +22,21 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Verify repo root & requirements
+        run: |
+          pwd
+          ls -la
+          echo "---- requirements.txt ----"
+          cat requirements.txt
+
+      - name: Upgrade pip & install deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip show pytest || (echo "pytest not installed" && exit 1)
+          python -m pip freeze | sed -n '1,120p'
+
       - name: Run tests
         run: |
-          python -c "import sys,os;print('PYTHONPATH=',os.environ.get('PYTHONPATH'));print('sys.path[0]=',sys.path[0])"
-          pytest
+          python -c "import sys,os;print('PYTHONPATH=',os.environ.get('PYTHONPATH'));print('sys.executable=',sys.executable)"
+          python -m pytest
