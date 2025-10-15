@@ -1,30 +1,25 @@
-# Minimal Multi-Agent Template (framework-agnostic)
+# multi-agent-lab
 
-A tiny, dependency-light scaffold for building LLM multi-agent systems. Bring your own LLM function.
+[![CI](https://img.shields.io/github/actions/workflow/status/your-username/multi-agent-lab/tests.yml?branch=main)](../../actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+![Python](https://img.shields.io/badge/python-3.9+-blue.svg)
 
-- Agent base with tools and memory
-- Message bus and round-robin router
-- Orchestrator with max turns, timeout, and stop conditions
-- Pluggable LLM adapter (OpenAI example included)
+A lightweight, framework-agnostic starter kit for building and experimenting with LLM-based multi-agent systems.
+
+- Agents with tools and memory
+- Message bus, router, and orchestrator with stop conditions and timeouts
+- Swappable adapters for OpenAI, Anthropic, and Azure OpenAI
+- Built-in tools: calculator, web search, file reader
+- Examples and tests included
 
 ## Quick start
 ```bash
+git clone https://github.com/your-username/multi-agent-lab.git
+cd multi-agent-lab
+pip install -r requirements.txt
+
+# run the basic demo
 python -m examples.demo
-```
-Swap dummy_llm with your provider in adapters/openai_adapter.py and wire it in examples/demo.py.
 
-## Files
-
-- src/core.py – Message, Memory, Tool base, Calculator tool
-
-- src/agent.py – Agent base and a GenericAgent
-
-- src/router.py – Round-robin router
-
-- src/orchestrator.py – Orchestrator runner
-
-- adapters/openai_adapter.py – Example LLM adapter
-
-- examples/demo.py – Researcher + Critic demo
-
-- tests/test_sanity.py – Minimal smoke test
+# run tests
+pytest
