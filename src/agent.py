@@ -58,7 +58,7 @@ class Agent:
             content = reply
         else:
             # Include tool result and ensure a final_answer is present
-            content = f"{reply}\n\nTool result: {tool_out}"
+            content = f"{reply}\n\ntool result: {tool_out}"
             if "final_answer" not in reply.lower():
                 content += f"\nfinal_answer: {tool_out}"
 
